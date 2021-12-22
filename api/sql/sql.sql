@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS devbook;
+
+USE devbook;
+
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users(
+    id SERIAL
+    , name VARCHAR(64) NOT NULL
+    , username VARCHAR(64) NOT NULL UNIQUE
+    , email VARCHAR(64) NOT NULL UNIQUE
+    , password VARCHAR(32) NOT NULL
+    , created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'UTC')
+);
