@@ -26,11 +26,11 @@ func Load() {
 	}
 
 	DatabaseConnectionString = fmt.Sprintf(
-		"dbname=%s user=%s password=%s host=%s port=%d sslmode=disable",
+		"dbname=%s user=%s password=%s host=%s port=%s sslmode=disable",
 		os.Getenv("DB_DATABASE"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
-		Port,
+		os.Getenv("DB_PORT"),
 	)
 }
