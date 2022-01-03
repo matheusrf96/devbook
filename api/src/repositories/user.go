@@ -65,3 +65,26 @@ func (repo Users) Get(nameOrUser string) ([]models.User, error) {
 
 	return users, nil
 }
+
+func (repo Users) GetUser(Id uint64) (models.User, error) {
+	rows, err := repo.db.Query(`
+		SELECT id, name, username, email, created_at
+		FROM users
+		WHERE id = $1
+	`, Id)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer rows.Close()
+
+	var user models.User
+
+	if rows.Next() {
+		err = rows.Scan(&user.Id, &user.Name, &user.Username, &user.Email, &user.CreatedAt)
+		if err != nil {
+			return models.User{}, err
+		}
+	}
+
+	return user, nil
+}
