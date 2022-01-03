@@ -88,3 +88,22 @@ func (repo Users) GetUser(Id uint64) (models.User, error) {
 
 	return user, nil
 }
+
+func (repo Users) Update(Id uint64, user models.User) error {
+	statement, err := repo.db.Prepare(`
+		UPDATE users
+		SET name = $1, username = $2, email = $3
+		WHERE id = $4
+	`)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(user.Name, user.Username, user.Email, Id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
