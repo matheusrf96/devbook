@@ -1,40 +1,44 @@
 package controllers
 
 import (
-	"api/db"
-	"api/repositories"
+	"api/src/db"
 	"api/src/models"
+	"api/src/repositories"
+	"api/src/responses"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal(err)
+		responses.Err(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	var user models.User
 	err = json.Unmarshal(requestBody, &user)
 	if err != nil {
-		log.Fatal(err)
+		responses.Err(w, http.StatusBadRequest, err)
+		return
 	}
 
 	db, err := db.Connect()
 	if err != nil {
-		log.Fatal(err)
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
 	}
+	defer db.Close()
 
 	repo := repositories.NewUserRepository(db)
-	userId, err := repo.Create(user)
+	user.Id, err = repo.Create(user)
 	if err != nil {
-		log.Fatal(err)
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
 	}
 
-	w.Write([]byte(fmt.Sprintf("ID inserted: %d", userId)))
+	responses.JSON(w, http.StatusCreated, user)
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
