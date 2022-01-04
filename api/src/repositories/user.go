@@ -125,3 +125,26 @@ func (repo Users) Delete(Id uint64) error {
 
 	return nil
 }
+
+func (repo Users) GetUserByEmail(email string) (models.User, error) {
+	row, err := repo.db.Query(`
+		SELECT id, password
+		FROM users
+		WHERE email = $1
+	`, email)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer row.Close()
+
+	var user models.User
+
+	if row.Next() {
+		err = row.Scan(&user.Id, &user.Password)
+		if err != nil {
+			return models.User{}, err
+		}
+	}
+
+	return user, nil
+}
