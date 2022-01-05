@@ -9,6 +9,6 @@ CREATE TABLE users(
     , name VARCHAR(64) NOT NULL
     , username VARCHAR(64) NOT NULL UNIQUE
     , email VARCHAR(64) NOT NULL UNIQUE
-    , password VARCHAR(32) NOT NULL
+    , password VARCHAR(128) NOT NULL
     , created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'UTC')
 );
