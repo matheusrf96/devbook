@@ -47,7 +47,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, _ := auth.CreateToken(userSaved.Id)
+	token, err := auth.CreateToken(userSaved.Id)
+	if err != nil {
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
+	}
 	fmt.Println(token)
 
 	responses.JSON(w, http.StatusOK, token)
