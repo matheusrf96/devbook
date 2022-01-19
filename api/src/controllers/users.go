@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"api/src/auth"
 	"api/src/db"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -102,6 +104,17 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.ParseUint(params["userId"], 10, 64)
 	if err != nil {
 		responses.Err(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenUserId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Err(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userId != tokenUserId {
+		responses.Err(w, http.StatusForbidden, errors.New("User cannot alter other user"))
 		return
 	}
 

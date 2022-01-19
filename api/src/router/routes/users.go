@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"api/src/router/controllers"
+	"api/src/controllers"
 	"net/http"
 )
 
@@ -28,7 +28,7 @@ var userRoutes = []Route{
 		URI:         "/users/{userId}",
 		Method:      http.MethodPut,
 		Function:    controllers.UpdateUser,
-		RequireAuth: false,
+		RequireAuth: true,
 	},
 	{
 		URI:         "/users/{userId}",
