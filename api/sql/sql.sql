@@ -5,10 +5,16 @@ USE devbook;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users(
-    id SERIAL
+    id SERIAL PRIMARY KEY
     , name VARCHAR(64) NOT NULL
     , username VARCHAR(64) NOT NULL UNIQUE
     , email VARCHAR(64) NOT NULL UNIQUE
     , password VARCHAR(128) NOT NULL
     , created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'UTC')
+);
+
+CREATE TABLE user_followers (
+    id SERIAL PRIMARY KEY
+    , user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE
+    , follower_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );
