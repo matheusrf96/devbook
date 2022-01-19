@@ -17,4 +17,5 @@ CREATE TABLE user_followers (
     id SERIAL PRIMARY KEY
     , user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE
     , follower_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE
+    , UNIQUE(user_id, follower_id)
 );
