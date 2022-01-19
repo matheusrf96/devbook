@@ -228,6 +228,42 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, struct {
 		Msg string `json:"msg"`
 	}{
-		Msg: fmt.Sprintf("User #%d is following user %d", followerId, userId),
+		Msg: fmt.Sprintf("User #%d is following user #%d", followerId, userId),
 	})
+}
+
+func UnfollowUser(w http.ResponseWriter, r *http.Request) {
+	followerId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Err(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	params := mux.Vars(r)
+	userId, err := strconv.ParseUint(params["userId"], 10, 64)
+	if err != nil {
+		responses.Err(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if followerId == userId {
+		responses.Err(w, http.StatusForbidden, errors.New("You cannot unfollow yourself"))
+		return
+	}
+
+	db, err := db.Connect()
+	if err != nil {
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repo := repositories.NewUserRepository(db)
+	err = repo.Unfollow(userId, followerId)
+	if err != nil {
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, fmt.Sprintf("User #%d unfollowed user #%d", followerId, userId))
 }
