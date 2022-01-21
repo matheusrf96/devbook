@@ -187,3 +187,37 @@ func (repo Users) Unfollow(userId uint64, followerId uint64) error {
 
 	return nil
 }
+
+func (repo Users) Followers(userId uint64) ([]models.User, error) {
+	rows, err := repo.db.Query(`
+		SELECT
+			u.id
+			, u.name
+			, u.username
+			, u.email
+			, u.created_at
+		FROM users AS u
+		INNER JOIN user_followers AS uf
+			ON u.id = uf.follower_id
+		WHERE uf.user_id = $1
+	`, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.User
+
+	for rows.Next() {
+		var user models.User
+
+		err = rows.Scan(&user.Id, &user.Name, &user.Username, &user.Email, &user.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}
